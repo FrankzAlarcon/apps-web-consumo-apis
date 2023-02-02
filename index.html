@@ -11,21 +11,31 @@
 </head>
 
 <body>
-  <header>
-    <div>
-      <h1>Consumo de APIs</h1>
-      <img src="" alt="">
+  <header class="header">
+    <div class="header-title">
+      <div>
+        <img src="./src/img/Rick_and_Morty_Logo.png" alt="Rick and Morty Logo">
+        <h1>Consumo de APIs</h1>
+      </div>
+      <div class="hidden info">
+        <p><span>Estudiante: </span> Frankz Alarcón</p>
+        <p>
+          <span>Github Tarea: </span>
+          <a href="https://github.com/FrankzAlarcon/apps-web-consumo-apis">Ir al repositorio</a>
+        </p>
+      </div>
     </div>
     <nav class="options">
       <button type="button" class="button-xhr">XMLHttpRequest</button>
       <button type="button" class="button-fetch">Fetch</button>
       <button type="button" class="button-axios">Axios</button>
+      <button type="button" class="button-jquery">Jquery</button>
     </nav>
   </header>
   <main class="container">
     <section class="show-code">
       <div>
-        <p class="title-code">res</p>
+        <p class="title-code"></p>
         <pre class="code"></pre>
       </div>
       <div>
@@ -35,7 +45,11 @@
     </section>
     <section class="characters-container"></section>
   </main>
+  <footer>
+    <p>Realizado por: <a class="me" href="https://github.com/FrankzAlarcon" target="_blank">@FrankzAlarcon</a></p>
+  </footer>
   <script type="module" src="./src/js/main.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
 </html>

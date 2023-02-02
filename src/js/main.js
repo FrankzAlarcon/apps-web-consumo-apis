@@ -5,7 +5,8 @@ const API_URL = "https://rickandmortyapi.com/api/character?page=1"
 const strategies = {
   fecth: "FETCH",
   axios: "AXIOS",
-  xhr: "XMLHTTPREQUEST"
+  xhr: "XMLHTTPREQUEST",
+  jquery: "JQUERY"
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +23,7 @@ function handleOptions() {
   const buttonXHR = document.querySelector(".button-xhr")
   const buttonFetch = document.querySelector(".button-fetch")
   const buttonAxios = document.querySelector(".button-axios")
+  const buttonJquery = document.querySelector(".button-jquery")
 
   buttonXHR.addEventListener('click', () => {
     showCode(strategies.xhr)
@@ -36,6 +38,11 @@ function handleOptions() {
   buttonAxios.addEventListener('click', () => {
     showCode(strategies.axios)
     handleRendering(strategies.axios)
+  })
+
+  buttonJquery.addEventListener('click', () => {
+    showCode(strategies.jquery)
+    handleRendering(strategies.jquery)
   })
 }
 
@@ -53,6 +60,20 @@ function showCode(strategy) {
     case strategies.xhr:
       text = requestWithXMLHttpRequest.toString()
       break;
+    case strategies.jquery:
+      text = `$(document).ready(function(){
+        $(".button-jquery").click(function(){
+          $.get(API_URL, function(response){
+            console.log(response)      
+            const data = mappingUtilityAttributes(response.results)    
+            renderData(data)
+            returnContainer.replaceChildren("")
+            returnContainer.classList.remove('content-center')
+            returnContainer.textContent = JSON.stringify(data, null, 2)
+          });
+        });
+      });`
+      break
     default:
 
   }
@@ -108,17 +129,21 @@ async function handleRendering(strategy) {
   renderSpinner(returnContainer)
   const charactersContainer = document.querySelector(".characters-container")
   renderSpinner(charactersContainer)  
+  const titleCode = document.querySelector(".title-code")
+  titleCode.textContent = `Request with: ${strategy}`
   let data  
   switch(strategy) {
     case strategies.fecth:
       data = await requestWithFetch()
       break;
     case strategies.axios:
-      data = await requestWithAxios()      
+      data = await requestWithAxios()        
       break;
     case strategies.xhr:
-      data = requestWithXMLHttpRequest()      
+      data = requestWithXMLHttpRequest()           
       return;
+    case strategies.jquery:
+      return
     default:
       data = requestWithAxios()      
       break;
@@ -131,23 +156,49 @@ async function handleRendering(strategy) {
 }
 
 function renderData(characters) {
-  console.log('render')
   const charactersContainer = document.querySelector(".characters-container")
-  charactersContainer.replaceChildren("")
+  charactersContainer.replaceChildren("")  
+
+  const createParagraphWithSpan = (label, content) => {
+    const paragraph = document.createElement("P")
+    const span = document.createElement("SPAN")
+    span.textContent = label
+    paragraph.append(span, content)
+    return paragraph
+  }
+
+  const createImage = (src, alt) => {
+    const image = document.createElement("IMG")
+    image.src = src
+    image.alt = alt
+    return image
+  }
+
   characters.forEach((character) => {
     const card = document.createElement("DIV")
     card.classList.add('card')
-    const image = document.createElement("IMG")
-    image.src = character.image
-    image.alt = character.name
+    const image = createImage(character.image, character.name)
+
     const labelContainer = document.createElement("DIV")
     labelContainer.classList.add("content")
-    const name = document.createElement("P")
-    name.textContent = character.name
-    const specie = document.createElement("P")
+    const statusContainer = document.createElement("DIV")
+    statusContainer.classList.add("status-container")
+    const status = document.createElement("SPAN")
+    status.classList.add(character.status)
+    status.textContent = character.status
+    const specie = document.createElement("SPAN")
+    specie.classList.add(character.specie)
     specie.textContent = character.specie
 
-    labelContainer.append(name, specie)
+    statusContainer.append(status, " - ", specie)
+    
+    const name = createParagraphWithSpan("Name: ", character.name)
+    name.classList.add("name-label")
+
+    const gender = createParagraphWithSpan("Gender: ", character.gender)
+    gender.classList.add("gender-label")
+
+    labelContainer.append(statusContainer, name, gender)
 
     card.append(image, labelContainer)
     charactersContainer.appendChild(card)
@@ -168,3 +219,17 @@ function renderSpinner(container) {
 
   container.innerHTML = spinnerHTML
 }
+
+$(document).ready(function(){
+  $(".button-jquery").click(function(){
+    $.get(API_URL, function(response){
+      console.log('jquery')
+      const returnContainer = document.querySelector('.show-code .return')
+      const data = mappingUtilityAttributes(response.results)    
+      renderData(data)
+      returnContainer.replaceChildren("")
+      returnContainer.classList.remove('content-center')
+      returnContainer.textContent = JSON.stringify(data, null, 2)
+    });
+  });
+});
