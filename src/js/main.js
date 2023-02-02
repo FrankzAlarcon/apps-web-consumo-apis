@@ -52,16 +52,44 @@ function showCode(strategy) {
   let text;
   switch (strategy) {
     case strategies.fecth:
-      text = requestWithFetch.toString()
+      text = 
+      `async function requestWithFetch() {
+        const response = await fetch(API_URL)
+        const data = await response.json()
+      
+        return mappingUtilityAttributes(data.results)
+      }`
       break;
     case strategies.axios:
-      text = requestWithAxios.toString()
+      text = 
+      `async function requestWithAxios() {
+        const { data } = await axios.get(API_URL)
+      
+        return mappingUtilityAttributes(data.results)
+      }`
       break;
     case strategies.xhr:
-      text = requestWithXMLHttpRequest.toString()
+      text = 
+      `function requestWithXMLHttpRequest() {
+        const returnContainer = document.querySelector('.show-code .return')
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', API_URL, true)
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            const rawData = JSON.parse(xhr.responseText)
+            const data = mappingUtilityAttributes(rawData.results)    
+            renderData(data)
+            returnContainer.replaceChildren("")
+            returnContainer.classList.remove('content-center')
+            returnContainer.textContent = JSON.stringify(data, null, 2)  
+          }
+        }
+        xhr.send()  
+      }`
       break;
     case strategies.jquery:
-      text = `$(document).ready(function(){
+      text = 
+      `$(document).ready(function(){
         $(".button-jquery").click(function(){
           $.get(API_URL, function(response){
             console.log(response)      
